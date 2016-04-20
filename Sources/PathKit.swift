@@ -189,15 +189,7 @@ extension Path {
   /// - Returns: the path of directory or file to which the symbolic link refers
   ///
   public func symlinkDestination() throws -> Path {
-    #if !swift(>=3.0)
-    let symlinkDestination = try Path.fileManager.destinationOfSymbolicLinkAtPath(path)
-    #else
-      #if os(Linux)
-      let symlinkDestination = try Path.fileManager.destinationOfSymbolicLinkAtPath(path)
-      #else
-      let symlinkDestination = try Path.fileManager.destinationOfSymbolicLink(atPath:path)
-      #endif
-    #endif
+    let symlinkDestination = try Path.fileManager.destinationOfSymbolicLink(atPath:path)
     let symlinkPath = Path(symlinkDestination)
     if symlinkPath.isRelative {
       return self + ".." + symlinkPath
@@ -270,15 +262,7 @@ extension Path {
   ///   determined
   ///
   public var exists: Bool {
-    #if !swift(>=3.0)
-    return Path.fileManager.fileExistsAtPath(self.path)
-    #else
-      #if os(Linux)
-      return Path.fileManager.fileExistsAtPath(self.path)
-      #else
-      return Path.fileManager.fileExists(atPath:self.path)
-      #endif
-    #endif
+    return Path.fileManager.fileExists(atPath:self.path)
   }
 
   /// Test whether a path is a directory.
@@ -289,21 +273,9 @@ extension Path {
   ///
   public var isDirectory: Bool {
     var directory = ObjCBool(false)
-    #if !swift(>=3.0)
-    guard Path.fileManager.fileExistsAtPath(normalize().path, isDirectory: &directory) else {
+    guard Path.fileManager.fileExists(atPath: normalize().path, isDirectory: &directory) else {
       return false
     }
-    #else
-      #if os(Linux)
-      guard Path.fileManager.fileExistsAtPath(normalize().path, isDirectory: &directory) else {
-        return false
-      }
-      #else
-      guard Path.fileManager.fileExists(atPath: normalize().path, isDirectory: &directory) else {
-        return false
-      }
-      #endif
-    #endif
     return directory.boolValue
   }
 
@@ -316,21 +288,9 @@ extension Path {
   ///
   public var isFile: Bool {
     var directory = ObjCBool(false)
-    #if !swift(>=3.0)
-    guard Path.fileManager.fileExistsAtPath(normalize().path, isDirectory: &directory) else {
+    guard Path.fileManager.fileExists(atPath: normalize().path, isDirectory: &directory) else {
       return false
     }
-    #else
-      #if os(Linux)
-      guard Path.fileManager.fileExistsAtPath(normalize().path, isDirectory: &directory) else {
-        return false
-      }
-      #else
-      guard Path.fileManager.fileExists(atPath: normalize().path, isDirectory: &directory) else {
-        return false
-      }
-      #endif
-    #endif
     return !directory.boolValue
   }
 
@@ -341,15 +301,7 @@ extension Path {
   ///
   public var isSymlink: Bool {
     do {
-      #if !swift(>=3.0)
-      let _ = try Path.fileManager.destinationOfSymbolicLinkAtPath(path)
-      #else
-        #if os(Linux)
-        let _ = try Path.fileManager.destinationOfSymbolicLinkAtPath(path)
-        #else
-        let _ = try Path.fileManager.destinationOfSymbolicLink(atPath: path)
-        #endif
-      #endif
+      let _ = try Path.fileManager.destinationOfSymbolicLink(atPath: path)
       return true
     } catch {
       return false
@@ -363,15 +315,7 @@ extension Path {
   ///   file could not be determined.
   ///
   public var isReadable: Bool {
-    #if !swift(>=3.0)
-    return Path.fileManager.isReadableFileAtPath(self.path)
-    #else
-      #if os(Linux)
-      return Path.fileManager.isReadableFileAtPath(self.path)
-      #else
-      return Path.fileManager.isReadableFile(atPath: self.path)
-      #endif
-    #endif
+    return Path.fileManager.isReadableFile(atPath: self.path)
   }
 
   /// Test whether a path is writeable
@@ -381,15 +325,7 @@ extension Path {
   ///   file could not be determined.
   ///
   public var isWritable: Bool {
-    #if !swift(>=3.0)
-    return Path.fileManager.isWritableFileAtPath(self.path)
-    #else
-      #if os(Linux)
-      return Path.fileManager.isWritableFileAtPath(self.path)
-      #else
-      return Path.fileManager.isWritableFile(atPath: self.path)
-      #endif
-    #endif
+    return Path.fileManager.isWritableFile(atPath: self.path)
   }
 
   /// Test whether a path is executable
@@ -399,15 +335,7 @@ extension Path {
   ///   file could not be determined.
   ///
   public var isExecutable: Bool {
-    #if !swift(>=3.0)
-    return Path.fileManager.isExecutableFileAtPath(self.path)
-    #else
-      #if os(Linux)
-      return Path.fileManager.isExecutableFileAtPath(self.path)
-      #else
-      return Path.fileManager.isExecutableFile(atPath: self.path)
-      #endif
-    #endif
+    return Path.fileManager.isExecutableFile(atPath: self.path)
   }
 
   /// Test whether a path is deletable
@@ -417,15 +345,7 @@ extension Path {
   ///   file could not be determined.
   ///
   public var isDeletable: Bool {
-    #if !swift(>=3.0)
-    return Path.fileManager.isDeletableFileAtPath(self.path)
-    #else
-      #if os(Linux)
-      return Path.fileManager.isDeletableFileAtPath(self.path)
-      #else
-      return Path.fileManager.isDeletableFile(atPath: self.path)
-      #endif
-    #endif
+    return Path.fileManager.isDeletableFile(atPath: self.path)
   }
 }
 
@@ -440,15 +360,7 @@ extension Path {
   ///   not a directory.
   ///
   public func mkdir() throws -> () {
-    #if !swift(>=3.0)
-    try Path.fileManager.createDirectoryAtPath(self.path, withIntermediateDirectories: false, attributes: nil)
-    #else
-      #if os(Linux)
-      try Path.fileManager.createDirectoryAtPath(self.path, withIntermediateDirectories: false, attributes: nil)
-      #else
-      try Path.fileManager.createDirectory(atPath: self.path, withIntermediateDirectories: false, attributes: nil)
-      #endif
-    #endif
+    try Path.fileManager.createDirectory(atPath: self.path, withIntermediateDirectories: false, attributes: nil)
   }
 
   /// Create the directory and any intermediate parent directories that do not exist.
@@ -457,15 +369,7 @@ extension Path {
   ///   not a directory.
   ///
   public func mkpath() throws -> () {
-    #if !swift(>=3.0)
-    try Path.fileManager.createDirectoryAtPath(self.path, withIntermediateDirectories: true, attributes: nil)
-    #else
-      #if os(Linux)
-      try Path.fileManager.createDirectoryAtPath(self.path, withIntermediateDirectories: true, attributes: nil)
-      #else
-      try Path.fileManager.createDirectory(atPath: self.path, withIntermediateDirectories: true, attributes: nil)
-      #endif
-    #endif
+    try Path.fileManager.createDirectory(atPath: self.path, withIntermediateDirectories: true, attributes: nil)
   }
 
   /// Delete the file or directory.
@@ -474,15 +378,7 @@ extension Path {
   ///   removed.
   ///
   public func delete() throws -> () {
-    #if !swift(>=3.0)
-    try Path.fileManager.removeItemAtPath(self.path)
-    #else
-      #if os(Linux)
-      try Path.fileManager.removeItemAtPath(self.path)
-      #else
-      try Path.fileManager.removeItem(atPath: self.path)
-      #endif
-    #endif
+    try Path.fileManager.removeItem(atPath: self.path)
   }
 
   /// Move the file or directory to a new location synchronously.
@@ -491,15 +387,7 @@ extension Path {
   ///   directory in its new location.
   ///
   public func move(destination: Path) throws -> () {
-    #if !swift(>=3.0)
-    try Path.fileManager.moveItemAtPath(self.path, toPath: destination.path)
-    #else
-      #if os(Linux)
-      try Path.fileManager.moveItemAtPath(self.path, toPath: destination.path)
-      #else
-      try Path.fileManager.moveItem(atPath: self.path, toPath: destination.path)
-      #endif
-    #endif
+    try Path.fileManager.moveItem(atPath: self.path, toPath: destination.path)
   }
 
   /// Copy the file or directory to a new location synchronously.
@@ -508,15 +396,7 @@ extension Path {
   ///   directory in its new location.
   ///
   public func copy(destination: Path) throws -> () {
-    #if !swift(>=3.0)
-    try Path.fileManager.copyItemAtPath(self.path, toPath: destination.path)
-    #else
-      #if os(Linux)
-      try Path.fileManager.copyItemAtPath(self.path, toPath: destination.path)
-      #else
-      try Path.fileManager.copyItem(atPath: self.path, toPath: destination.path)
-      #endif
-    #endif
+    try Path.fileManager.copyItem(atPath: self.path, toPath: destination.path)
   }
 
   /// Creates a hard link at a new destination.
@@ -524,15 +404,7 @@ extension Path {
   /// - Parameter destination: The location where the link will be created.
   ///
   public func link(destination: Path) throws -> () {
-    #if !swift(>=3.0)
-    try Path.fileManager.linkItemAtPath(self.path, toPath: destination.path)
-    #else
-      #if os(Linux)
-      try Path.fileManager.linkItemAtPath(self.path, toPath: destination.path)
-      #else
-      try Path.fileManager.linkItem(atPath: self.path, toPath: destination.path)
-      #endif
-    #endif
+    try Path.fileManager.linkItem(atPath: self.path, toPath: destination.path)
   }
 
   /// Creates a symbolic link at a new destination.
@@ -540,15 +412,7 @@ extension Path {
   /// - Parameter destintation: The location where the link will be created.
   ///
   public func symlink(destination: Path) throws -> () {
-    #if !swift(>=3.0)
-    try Path.fileManager.createSymbolicLinkAtPath(self.path, withDestinationPath: destination.path)
-    #else
-      #if os(Linux)
-      try Path.fileManager.createSymbolicLinkAtPath(self.path, withDestinationPath: destination.path)
-      #else
-      try Path.fileManager.createSymbolicLink(atPath: self.path, withDestinationPath: destination.path)
-      #endif
-    #endif
+    try Path.fileManager.createSymbolicLink(atPath: self.path, withDestinationPath: destination.path)
   }
 }
 
@@ -658,14 +522,10 @@ extension Path {
   /// - Returns: the contents of the file at the specified path as string.
   ///
   public func read(encoding: NSStringEncoding = NSUTF8StringEncoding) throws -> String {
-    #if !swift(>=3.0)
-    return try NSString(contentsOfFile: path, encoding: encoding).substringFromIndex(0) as String
-    #else
-      #if os(Linux)
+    #if os(Linux)
       return try NSString(contentsOfFile: path, encoding: encoding).substringFromIndex(0) as String
-      #else
-      return try NSString(contentsOfFile: path, encoding: encoding).substring(from:0) as String
-      #endif
+    #else
+      return try NSString(contentsOfFile: path, encoding: encoding).substring(from: 0) as String
     #endif
   }
 
@@ -677,15 +537,7 @@ extension Path {
   /// - Parameter data: the contents to write to file.
   ///
   public func write(data: NSData) throws {
-    #if !swift(>=3.0)
-    try data.writeToFile(normalize().path, options: .DataWritingAtomic)
-    #else
-      #if os(Linux)
-      try data.writeToFile(normalize().path, options: .DataWritingAtomic)
-      #else
-      try data.write(toFile:normalize().path, options: .dataWritingAtomic)
-      #endif
-    #endif
+    try data.write(toFile:normalize().path, options: .dataWritingAtomic)
   }
 
   /// Reads the file.
@@ -701,14 +553,10 @@ extension Path {
   /// - Returns: the contents of the file at the specified path as string.
   ///
   public func write(string: String, encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
-    #if !swift(>=3.0)
-    try NSString(string: string).writeToFile(normalize().path, atomically: true, encoding: encoding)
-    #else
-      #if os(Linux)
+    #if os(Linux)
       try NSString(string: string).writeToFile(normalize().path, atomically: true, encoding: encoding)
-      #else
-      try NSString(string: string).write(toFile:normalize().path, atomically: true, encoding: encoding)
-      #endif
+    #else
+      try NSString(string: string).write(toFile: normalize().path, atomically: true, encoding: encoding)
     #endif
   }
 }
@@ -730,22 +578,9 @@ extension Path {
   /// - Returns: paths to all files, directories and symbolic links contained in the directory
   ///
   public func children() throws -> [Path] {
-    #if !swift(>=3.0)
-    return try Path.fileManager.contentsOfDirectoryAtPath(path).map {
+    return try Path.fileManager.contentsOfDirectory(atPath:path).map {
       self + Path($0)
     }
-    #else
-      #if os(Linux)
-      return try Path.fileManager.contentsOfDirectoryAtPath(path).map {
-        self + Path($0)
-      }
-      #else
-      return try Path.fileManager.contentsOfDirectory(atPath:path).map {
-        self + Path($0)
-      }
-      #endif
-    #endif
-
   }
 
   /// Performs a deep enumeration in a directory
@@ -754,21 +589,9 @@ extension Path {
   ///   any subdirectory.
   ///
   public func recursiveChildren() throws -> [Path] {
-    #if !swift(>=3.0)
-    return try Path.fileManager.subpathsOfDirectoryAtPath(path).map {
+    return try Path.fileManager.subpathsOfDirectory(atPath:path).map {
       self + Path($0)
     }
-    #else
-      #if os(Linux)
-      return try Path.fileManager.subpathsOfDirectoryAtPath(path).map {
-        self + Path($0)
-      }
-      #else
-      return try Path.fileManager.subpathsOfDirectory(atPath:path).map {
-        self + Path($0)
-      }
-      #endif
-    #endif
   }
 }
 
@@ -801,7 +624,7 @@ extension Path {
       }
       #else
         return (0..<Int(matchc)).flatMap { index in
-          if let path = String(validatingUTF8: gt.gl_pathv[index]) {
+          if let path = String(validatingUTF8: gt.gl_pathv[index]!) {
             return Path(path)
           }
 
@@ -815,7 +638,7 @@ extension Path {
   }
 
   public func glob(pattern: String) -> [Path] {
-    return Path.glob((self + pattern).description)
+    return Path.glob(pattern: (self + pattern).description)
   }
 }
 
@@ -833,15 +656,7 @@ extension Path : Sequence {
 
     init(path: Path) {
       self.path = path
-      #if !swift(>=3.0)
-      self.directoryEnumerator = Path.fileManager.enumeratorAtPath(path.path)!
-      #else
-        #if os(Linux)
-        self.directoryEnumerator = Path.fileManager.enumeratorAtPath(path.path)!
-        #else
-        self.directoryEnumerator = Path.fileManager.enumerator(atPath:path.path)!
-        #endif
-      #endif
+      self.directoryEnumerator = Path.fileManager.enumerator(atPath:path.path)!
     }
 
     public func next() -> Path? {
