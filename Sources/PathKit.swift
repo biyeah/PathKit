@@ -27,7 +27,11 @@ public struct Path {
   /// The underlying string representation
   internal var path: String
 
-  internal static var fileManager = NSFileManager.defaultManager()
+  #if os(OSX)
+    internal static var fileManager = NSFileManager.default()
+  #else
+    internal static var fileManager = NSFileManager.defaultManager()
+  #endif
 
   // MARK: Init
 
@@ -64,13 +68,7 @@ public struct Path {
       path = "."
     } else if components.first == Path.separator && components.count > 1 {
       let p = components.joined(separator: Path.separator)
-#if os(Linux)
-      let index = p.startIndex.distance( to: p.startIndex.successor())
-      path = NSString(string: p).substringFromIndex(index)
-#else
-      path = p.substring(from: p.startIndex.successor())
-#endif
-
+      path = p.substring(from: p.index(after: p.startIndex))
     } else {
       path = components.joined(separator: Path.separator)
     }
@@ -440,7 +438,7 @@ extension Path {
   /// - Parameter closure: A closure to be executed while the current directory is configured to
   ///   the path.
   ///
-  public func chdir(@noescape closure: () throws -> ()) rethrows {
+  public func chdir(closure: @noescape () throws -> ()) rethrows {
     let previous = Path.current
     Path.current = self
     defer { Path.current = previous }
@@ -522,11 +520,7 @@ extension Path {
   /// - Returns: the contents of the file at the specified path as string.
   ///
   public func read(encoding: NSStringEncoding = NSUTF8StringEncoding) throws -> String {
-    #if os(Linux)
-      return try NSString(contentsOfFile: path, encoding: encoding).substringFromIndex(0) as String
-    #else
       return try NSString(contentsOfFile: path, encoding: encoding).substring(from: 0) as String
-    #endif
   }
 
   /// Write a file.
@@ -553,11 +547,7 @@ extension Path {
   /// - Returns: the contents of the file at the specified path as string.
   ///
   public func write(string: String, encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
-    #if os(Linux)
-      try NSString(string: string).writeToFile(normalize().path, atomically: true, encoding: encoding)
-    #else
       try NSString(string: string).write(toFile: normalize().path, atomically: true, encoding: encoding)
-    #endif
   }
 }
 
